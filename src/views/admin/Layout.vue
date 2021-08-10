@@ -1,0 +1,176 @@
+<template>
+	<v-app>
+		<v-navigation-drawer 
+      app 
+      v-model="drawer" 
+      :mini-variant.sync="mini"
+    >
+      <v-list-item class="px-2">
+        <v-list-item-avatar>
+          <v-avatar
+      		  size="40"
+      		  class="mt-1"
+            color="cyan darken-2"
+          >
+            <v-img 
+              :src="avatar" 
+              :alt="name" 
+              :placeholder="name"
+            ></v-img>
+          </v-avatar>
+        </v-list-item-avatar>
+        <v-list-item-title>{{ name }}</v-list-item-title>
+        <v-btn
+          icon
+          @click.stop="mini = !mini"
+        >
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list
+        nav
+        dense
+      >
+        <v-list-item-group
+          color="cyan darken-2"
+        >
+          <v-list-item
+            v-for="(item, i) in navItems"
+            :key="i"
+            :to="item.router"
+            exact
+          >
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.text }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-app-bar
+      dark
+      app
+      style="background:linear-gradient(to right, rgba(30,213,169,1) 0%, rgba(1,180,228,1) 100%);"
+      elevate-on-scroll
+      shrink-on-scroll
+      fixed
+      min-height="50"
+    >
+      <template v-slot:img="{ props }">
+        <v-img
+          v-bind="props"
+          gradient="to top right, rgba(19,84,122,.5), rgba(128,208,199,.8)"
+        ></v-img>
+      </template>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-title>{{ name }}</v-app-bar-title>
+      <v-spacer></v-spacer>
+      <v-menu
+        bottom
+        offset-y
+        rounded
+        right
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn 
+            icon 
+            v-on="on"
+          >
+            <v-icon color="white">mdi-cog</v-icon>
+          </v-btn>
+        </template>
+        <v-card width="150">
+          <v-list-item-content class="justify-center">
+            <v-btn
+              depressed
+              rounded
+              text
+              v-for="(button, i) in buttons"
+              :key="i"
+              :to="button.route"
+            >
+              {{ button.name }}
+            </v-btn>
+            <v-divider class="my-3"></v-divider>
+          </v-list-item-content>
+        </v-card>
+      </v-menu>
+       
+    </v-app-bar>
+
+		<v-main>
+      <v-container fluid>
+        <router-view></router-view>
+      </v-container>
+		</v-main>
+
+    <v-footer 
+      app
+      elevation="0"
+      inset
+      outlined
+      height="50"
+    >
+      <v-row class="pr-7">
+        <v-col 
+          cols="12"
+          class="text-right font-italic"
+        >
+          Designed with <v-icon color="red" size="20">mdi-heart</v-icon> by xCame
+        </v-col>
+      </v-row>      
+    </v-footer>
+
+	</v-app>
+</template>
+
+<script>
+  import axios from 'axios'
+
+	export default {
+		components: {
+		},
+	  name: 'Admin',
+	  data() {
+	    return {
+        name: '',
+        avatar: '',
+				drawer: true,
+        mini: false,
+        navItems: [
+          { text: 'Baş sahypa', icon: 'mdi-home', router: '/admin' },
+          { text: 'Filmler', icon: 'mdi-movie', router: '/admin/movies' },
+          { text: 'Aýdymlar', icon: 'mdi-music-note', router: '/admin/tracks' },
+          { text: 'Wideolar', icon: 'mdi-video', router: '/admin/videos' },
+          { text: 'Kitaplar', icon: 'mdi-book', router: '/admin/books' },
+          { text: 'Parol', icon: 'mdi-key', router: '/admin/password' }
+        ],
+        buttons: [
+          { name: 'bas sahypa', route: '/' },
+          { name: 'filmler', route: '/movies' },
+          { name: 'aydymlar', route: '/tracks' },
+          { name: 'kitaplar', route: '/books' },
+          { name: 'wideolar', route: '/videos' },
+        ]
+	    }
+	  },
+    created() {
+      axios.get('/api/admin')
+        .then(res => {
+          this.name = res.data.name;
+          this.avatar = res.data.avatar;
+        })
+        .catch(err => {
+          this.name = "Railways"
+        })
+    }
+	}
+</script>
